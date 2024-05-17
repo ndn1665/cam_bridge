@@ -218,7 +218,7 @@ class room(models.Model):
 class matchingHistory(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(userInfo, on_delete = models.CASCADE, related_name = 'matchingHistory_userInfo')
-    matched_user = models.IntegerField(null=True, blank=True) 
+    matched_user = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return str(self.pk)

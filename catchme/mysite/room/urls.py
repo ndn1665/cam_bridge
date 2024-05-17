@@ -9,5 +9,5 @@ urlpatterns = [
     path('api/room_info/percentage/', room_views.UserIdealPercentageView.as_view(), name="percentageListView"),
     path('api/room_info/room/percentage/', room_views.RoomPercentageView.as_view(), name="roomPercentageView"),
     path('api/room_info/second/', room_views.RoomSecondRecommendationView.as_view(), name="secondRecommendationView"),
-
+    path('api/room_info/<int:r_no>/first_match',room_views.FirstMatchView.as_view())
 ]

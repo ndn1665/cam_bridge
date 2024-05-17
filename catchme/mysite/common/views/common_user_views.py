@@ -43,7 +43,7 @@ class UserViewSet(ModelViewSet): #url 설정 해야함
                 print(men_info_serializer.errors)
             
         else:
-            women_info_serializer = WomenInfoSerializer(data =data)
+            women_info_serializer = WomenInfoSerializer(data = data)
             if women_info_serializer.is_valid():
                 print("women valid")
                 women_info_serializer.save()
@@ -60,7 +60,8 @@ class UserViewSet(ModelViewSet): #url 설정 해야함
         serializer = UserInfoSerializer(userinfo)
         return Response(serializer.data)
     #여기에 action으로 수정해야함. w_crush_kid를 수정하는건 굉장히 partial한작업인데 update로 처리하고잇으므로
-    def update(self, request,*args, **kwargs):
+    @action(detail = True, methods = ['put'])
+    def update_w_crush(self, request,*args, **kwargs):
         #modal id를 부여해야함 -> 남자한테만 뜨는 모달창이기 때문
         kid = kwargs.get('pk')
         userinfo = get_object_or_404(userInfo, kid = kid)
@@ -76,6 +77,46 @@ class UserViewSet(ModelViewSet): #url 설정 해야함
         else:
             pass
         return Response({"message": "w_crush가 업데이트되었습니다."}, status=status.HTTP_200_OK)
+    
+    @action(detail = True, methods=['get'])
+    def matching_result(self, request, *args, **kwargs):
+        kid = kwargs.get('pk')
+        userinfo = get_object_or_404(userInfo,kid = kid)
+
+        if userinfo.ismale:
+            user = userinfo.man_userInfo.get()
+            if user.w_match:
+                matched_userinfo = get_object_or_404(userInfo, kid=user.w_match.user.kid)
+            else:
+                return Response({"message": "매칭된 사용자가 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            user = userinfo.woman_userInfo.get()
+            if user.m_match:
+                matched_userinfo = get_object_or_404(userInfo, kid=user.w_match.user.kid)
+            else:
+                return Response({"message": "매칭된 사용자가 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = RefinedUserInfoSerializer(matched_userinfo)
+        return Response(serializer.data)
+
+    @action(detail = True, methods = ['put'])
+    def leaving_room(self, request,*args, **kwargs):
+        kid = kwargs.get('pk')
+        userinfo = get_object_or_404(userInfo, kid = kid)
+
+        if userinfo.ismale:
+            user = userinfo.man_userInfo.get()
+            user.participate_room = None
+            user.ready = False
+
+            user.save()
+        else:
+            user = userinfo.woman_userInfo.get()
+            user.participate_room = None
+            user.ready = False
+
+            user.save()
+        return Response({"message": "participate_room정보와 ready정보가 업데이트되었습니다."}, status=status.HTTP_200_OK)
     @action(detail = True, methods = ['post'])
     def join_party(self, request,**kwargs):#나중에 kwargs가 아니라 request.user 이런식으로 더 안전하게 정보 가져오기
         #userinfo = get_object_or_404(userInfo, kid=request.user.kid) 이렇게

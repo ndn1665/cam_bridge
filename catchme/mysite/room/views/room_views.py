@@ -251,7 +251,7 @@ class UserIdealPercentageView(APIView):
 
         for woman in matching_women:
             matching_count = 0
-            for condition in conditions:
+            for condition in conditions: 
                 if woman in matching_women.filter(condition):
                     matching_count += 1
 

@@ -61,7 +61,7 @@ class UserViewSet(ModelViewSet): #url 설정 해야함
         return Response(serializer.data)
     #여기에 action으로 수정해야함. w_crush_kid를 수정하는건 굉장히 partial한작업인데 update로 처리하고잇으므로
     @action(detail = True, methods = ['put'])
-    def update_w_crush(self, request,*args, **kwargs):
+    def update_crush_or_match(self, request,*args, **kwargs):
         #modal id를 부여해야함 -> 남자한테만 뜨는 모달창이기 때문
         kid = kwargs.get('pk')
         userinfo = get_object_or_404(userInfo, kid = kid)
@@ -70,14 +70,27 @@ class UserViewSet(ModelViewSet): #url 설정 해야함
             user = userinfo.man_userInfo.get()
             w_crush_kid_data = request.data.get("w_crush_kid")
 
-            crush_userInfo = get_object_or_404(userInfo,kid=w_crush_kid_data)
-            user.w_crush = crush_userInfo.woman_userInfo.get()
+            w_crush_userInfo = get_object_or_404(userInfo,kid=w_crush_kid_data)
+            user.w_crush = w_crush_userInfo.woman_userInfo.get()
 
             user.save()
         else:
-            pass
+            user = userinfo.woman_userInfo.get()
+            m_match_kid_data = request.data.get("m_match_kid")
+            
+            m_match_userInfo = get_object_or_404(userInfo,kid = m_match_kid_data)
+            user.m_match = m_match_userInfo.man_userInfo.get()
+
+            user.save()
+
+            m_match_userInfo.w_match = user
+
+            m_match_userInfo.save()
+
         return Response({"message": "w_crush가 업데이트되었습니다."}, status=status.HTTP_200_OK)
     
+
+
     @action(detail = True, methods=['get'])
     def matching_result(self, request, *args, **kwargs):
         kid = kwargs.get('pk')

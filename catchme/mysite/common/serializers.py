@@ -174,5 +174,5 @@ class UserMatchingHistorySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = userInfo
-        fields = '__all__'
+        fields = ('matching_history',)
  

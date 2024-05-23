@@ -58,7 +58,7 @@ class kakaoLoginView(APIView):
                 data={
                     "grant_type": "authorization_code",
                     "client_id": "273e3f916e59df62a965cb94d235f29e",
-                    "redirect_uri": "https://catchme-smoky.vercel.app/login",
+                    "redirect_uri": "https://www.catchmenow.co.kr/login",
                     "code": code
                 },
             )

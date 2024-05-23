@@ -66,11 +66,6 @@ class SelectedRoomView(APIView):
         selected_room.delete()
         return Response({"message": "방이 성공적으로 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
 
-class FirstMatchView(APIView):
-    def get(self, request, r_no):
-        selected_room = get_object_or_404(room, rno=r_no)
-        serializer = SelectedRoomSerializer(selected_room)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # 이상형 조건에 부합하는 상위 방 5개 조회 가능한 클래스
 class RoomListIdealView(APIView):
